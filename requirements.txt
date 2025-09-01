@@ -1,0 +1,4 @@
+transformers
+diffusers
+pydantic
+boto3
