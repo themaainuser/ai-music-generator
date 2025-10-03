@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import SongPanel from "~/app/components/create/song-panel";
+import { SongPanel } from "~/app/components/create/song-panel";
 import TrackListFetcher from "~/app/components/create/track-list-fetcher";
 import { auth } from "~/lib/auth";
 
