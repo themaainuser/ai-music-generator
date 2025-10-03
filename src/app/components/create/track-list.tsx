@@ -27,10 +27,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import RenameDialogue from "./rename-dialogue";
 import { useRouter } from "next/router";
 import { usePlayerStore } from "~/store/use-player-store";
 import Image from "next/image";
+import { RenameDialog } from "./rename-dialogue";
 
 export interface Track {
   id: string;
@@ -281,7 +281,7 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
         </div>
       </div>
       {renameTrack && (
-        <RenameDialogue
+        <RenameDialog
           track={renameTrack}
           onClose={() => setRenameTrack(null)}
           onRename={async (trackId: string, newTitle: string) =>

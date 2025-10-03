@@ -6,11 +6,15 @@ import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 
-function RenameDialogue(
-  track: Track,
-  onClose: () => void,
-  onRename: (trackId: string, newTitle: string) => void,
-) {
+export function RenameDialog({
+  track,
+  onClose,
+  onRename,
+}: {
+  track: Track;
+  onClose: () => void;
+  onRename: (trackId: string, newTitle: string) => void;
+}) {
   const [title, setTitle] = useState(track.title ?? "");
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,5 +46,3 @@ function RenameDialogue(
     </Dialog>
   );
 }
-
-export default RenameDialogue;
