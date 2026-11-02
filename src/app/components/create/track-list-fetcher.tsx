@@ -1,21 +1,21 @@
 "use server";
 
-import { headers } from "next/dist/server/request/headers";
+import { headers } from "next/headers";
 import { getPresignedUrl } from "~/actions/generation";
 import { auth } from "~/lib/auth";
 import { db } from "~/server/db";
 import { TrackList } from "./track-list";
+import { redirect } from "next/navigation";
 
 export default async function TrackListFetcher() {
   const session = await auth.api.getSession({ headers: await headers() });
-  await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // if (!session) {
-  //   redirect("/auth/sigin-in");
-  // }
+  if (!session) {
+    redirect("/auth/sign-in");
+  }
 
   const song = await db.song.findMany({
-    where: { userId: session?.user.id },
+    where: { userId: session.user.id },
     include: {
       user: {
         select: {

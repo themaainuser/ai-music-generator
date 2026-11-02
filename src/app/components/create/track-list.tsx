@@ -27,7 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { usePlayerStore } from "~/store/use-player-store";
 import Image from "next/image";
 import { RenameDialog } from "./rename-dialogue";
@@ -64,7 +64,14 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
   const handleTrackSelect = async (track: Track) => {
     if (loadingTrackId) return; // Prevent multiple clicks
     setLoadingTrackId(track.id);
-    const playUrl = await getPlayUrl(track.id);
+
+    let playUrl: string | null = null;
+    if (track.id === "default-demo-track" && track.playUrl) {
+      playUrl = track.playUrl;
+    } else {
+      playUrl = await getPlayUrl(track.id);
+    }
+
     setLoadingTrackId(null);
 
     setTrack({
@@ -79,8 +86,7 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
   };
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    // await handleTrackSelect(renameTrack!);
-    router.reload();
+    router.refresh();
     setTimeout(() => {
       setIsRefreshing(false);
     }, 1000);
@@ -99,7 +105,6 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <Button
-              disabled
               variant="outline"
               size="sm"
               onClick={handleRefresh}
@@ -123,7 +128,7 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
                         key={track.id}
                         className="mb-2 flex cursor-not-allowed items-center gap-4 rounded-lg p-3"
                       >
-                        <div className="bg-destructive/10 flex size-8 flex-shrink-0 items-center justify-center rounded-md">
+                        <div className="bg-destructive/10 flex size-8 shrink-0 items-center justify-center rounded-md">
                           <XCircle className="text-destructive size-6" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -142,7 +147,7 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
                         key={track.id}
                         className="mb-2 flex cursor-not-allowed items-center gap-4 rounded-lg p-3"
                       >
-                        <div className="bg-destructive/10 flex size-8 flex-shrink-0 items-center justify-center rounded-md">
+                        <div className="bg-destructive/10 flex size-8 shrink-0 items-center justify-center rounded-md">
                           <XCircle className="text-destructive size-6" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -183,15 +188,17 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
                         key={track.id}
                         onClick={() => handleTrackSelect(track)}
                       >
-                        <div className="group relative flex size-12 flex-shrink-0 overflow-hidden">
+                        <div className="group relative flex size-12 shrink-0 overflow-hidden">
                           {track.thumbnailUrl ? (
                             <Image
                               className="size-full object-cover"
                               src={track.thumbnailUrl}
                               alt={track.title ?? "Track Thumbnail"}
+                              width={48}
+                              height={48}
                             />
                           ) : (
-                            <div className="bg-secondary/10 flex size-full flex-shrink-0 items-center justify-center rounded-md">
+                            <div className="bg-secondary/10 flex size-full shrink-0 items-center justify-center rounded-md">
                               <Music className="text-muted-foreground size-6" />
                             </div>
                           )}
@@ -265,8 +272,6 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
                                 <Pencil />
                                 Rename
                               </DropdownMenuItem>
-                              <DropdownMenuItem>Team</DropdownMenuItem>
-                              <DropdownMenuItem>Subscription</DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>

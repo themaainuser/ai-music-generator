@@ -5,11 +5,11 @@ import { db } from "~/server/db";
 import { Polar } from "@polar-sh/sdk";
 import { env } from "~/env";
 
-
 const polarClient = new Polar({
     accessToken: env.POLAR_ACCESS_TOKEN,
     server: 'sandbox'
 });
+
 export const auth = betterAuth({
     database: prismaAdapter(db, {
         provider: "postgresql",
@@ -26,16 +26,16 @@ export const auth = betterAuth({
                 checkout({
                     products: [
                         {
-                            productId: "1b6c0da0-404a-4109-8f2d-5ca454adcec2", // ID of Product from Polar Dashboard
-                            slug: "Large" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+                            productId: "1b6c0da0-404a-4109-8f2d-5ca454adcec2",
+                            slug: "Large"
                         },
                         {
-                            productId: "6a8d6ff6-c230-4956-9593-a91c438bbd3f", // ID of Product from Polar Dashboard
-                            slug: "Medium" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+                            productId: "6a8d6ff6-c230-4956-9593-a91c438bbd3f",
+                            slug: "Medium"
                         },
                         {
-                            productId: "99935252-b8a7-4353-9727-8bb951e5aebd", // ID of Product from Polar Dashboard
-                            slug: "Small" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+                            productId: "99935252-b8a7-4353-9727-8bb951e5aebd",
+                            slug: "Small"
                         }
                     ],
                     successUrl: "/",
@@ -55,7 +55,7 @@ export const auth = betterAuth({
                         let creditsToAdd = 0;
                         switch (productId) {
                             case "1b6c0da0-404a-4109-8f2d-5ca454adcec2":
-                                creditsToAdd = 30;
+                                creditsToAdd = 50;
                                 break;
                             case "6a8d6ff6-c230-4956-9593-a91c438bbd3f":
                                 creditsToAdd = 15;

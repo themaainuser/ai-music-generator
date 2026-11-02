@@ -97,6 +97,9 @@ export const generateSong = inngest.createFunction(
                     prompt: song.prompt,
                 }
             }
+            else {
+                throw new Error(`Song ${songId} has no valid generation mode: missing required fields`);
+            }
 
             return { userId: song.user.id, credits: song.user.credits, endpoint, body }
         });

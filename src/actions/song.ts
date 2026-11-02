@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { toast } from "sonner";
 import { auth } from "~/lib/auth";
 import { db } from "~/server/db";
+import { getPresignedUrl } from "~/actions/generation";
 
 export async function setPublishedStatus(songId: string, published: boolean) {
     const session = await auth.api.getSession({
@@ -37,8 +37,11 @@ export async function downloadSong(songId: string) {
             userId: session.user.id,
         },
     });
-    if (!song) return toast.error("Song not found");
-    redirect(song.s3key!);
+    if (!song?.s3key) {
+        throw new Error("Song not found");
+    }
+    const url = await getPresignedUrl(song.s3key);
+    redirect(url);
 }
 export async function onRenameTitle(songId: string, newTitle: string) {
     const session = await auth.api.getSession({

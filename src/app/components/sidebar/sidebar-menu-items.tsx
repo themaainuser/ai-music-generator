@@ -2,8 +2,10 @@
 
 import { Home, Music } from "lucide-react";
 import { usePathname } from "next/navigation";
-import React from "react";
-import { SidebarMenuButton, SidebarMenuItem } from "~/app/components/ui/sidebar";
+import {
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "~/app/components/ui/sidebar";
 
 export default function SidebarMenuItems() {
   const path = usePathname();

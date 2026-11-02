@@ -1,4 +1,3 @@
-// import { redirect } from "next/dist/server/api-utils";
 import { Loader2 } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -10,9 +9,9 @@ import { auth } from "~/lib/auth";
 export default async function HomePage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  // if (!session) {
-  //   redirect("/auth/sigin-in");
-  // }
+  if (!session) {
+    redirect("/auth/sign-in");
+  }
   return (
     <div className="flex h-full flex-col lg:flex-row">
       <SongPanel />

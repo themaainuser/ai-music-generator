@@ -6,9 +6,9 @@ import { redirect } from "next/navigation";
 import { inngest } from "~/inngest/client";
 import { auth } from "~/lib/auth";
 import { db } from "~/server/db";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { env } from "~/env";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 export interface GenerateRequest {
   prompt?: string;
@@ -49,9 +49,9 @@ export async function queueSong(
       title,
       prompt: generateRequest.prompt,
       lyrics: generateRequest.lyrics,
-      describedLyrics: generateRequest.describedLyrics!,
-      fullDescribedSong: generateRequest.fullDescribedSong!,
-      instrumental: generateRequest.instrumental!,
+      describedLyrics: generateRequest.describedLyrics,
+      fullDescribedSong: generateRequest.fullDescribedSong,
+      instrumental: generateRequest.instrumental ?? false,
       guidanceScale,
       audioDuration: 180,
       description: ""
@@ -63,6 +63,14 @@ export async function queueSong(
     data: { songId: song.id, userId: song.userId },
   });
 }
+
+const s3Client = new S3Client({
+  region: env.AWS_REGION,
+  credentials: {
+    accessKeyId: env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 export async function getPlayUrl(songId: string) {
   const session = await auth.api.getSession({
@@ -84,9 +92,20 @@ export async function getPlayUrl(songId: string) {
     },
   });
 
+  return await getPresignedUrl(song.s3key!);
+}
+
+export async function incrementListenCount(songId: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) redirect("/auth/sign-in");
+
   await db.song.update({
     where: {
       id: songId,
+      OR: [{ userId: session.user.id }, { published: true }],
     },
     data: {
       listenCount: {
@@ -94,19 +113,9 @@ export async function getPlayUrl(songId: string) {
       },
     },
   });
-
-  return await getPresignedUrl(song.s3key!);
 }
 
 export async function getPresignedUrl(key: string) {
-  const s3Client = new S3Client({
-    region: env.AWS_REGION,
-    credentials: {
-      accessKeyId: env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: env.AWS_SECRET_ACCESS_KEY_ID,
-    },
-  });
-
   const command = new GetObjectCommand({
     Bucket: env.S3_BUCKET_NAME,
     Key: key,

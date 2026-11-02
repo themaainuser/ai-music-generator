@@ -22,6 +22,7 @@ import {
 import { DropdownMenuContent } from "~/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import Image from "next/image";
+import { incrementListenCount } from "~/actions/generation";
 
 export function SoundBar() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -72,13 +73,15 @@ export function SoundBar() {
       setProgress(0);
       setDuration(0);
       audioRef.current.src = track.url;
-      audioRef.current?.load();
-    }
-    const promisePlay = audioRef.current?.play();
-    if (promisePlay) {
-      promisePlay
+      audioRef.current.load();
+      audioRef.current
+        .play()
         .then(() => {
           setIsPlaying(true);
+          // Count a listen once a newly selected track actually starts.
+          incrementListenCount(track.id).catch((error) => {
+            console.error("Error counting listen:", error);
+          });
         })
         .catch((error) => {
           toast.error("Error playing audio. Please try again.");
@@ -94,8 +97,14 @@ export function SoundBar() {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      await audioRef.current.play();
-      setIsPlaying(true);
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch (error) {
+        toast.error("Error playing audio. Please try again.");
+        console.error("Error playing audio:", error);
+        setIsPlaying(false);
+      }
     }
   };
 
@@ -120,11 +129,13 @@ export function SoundBar() {
         <div className="space-y-2 p-3">
           <div className="flex items-center justify-between gap-2 text-sm">
             <div className="flex min-w-0 flex-1 items-center gap-2">
-              <div className="bg-primary text-primary-foreground flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+              <div className="bg-primary text-primary-foreground flex size-10 shrink-0 items-center justify-center rounded-full">
                 {track?.artwork ? (
                   <Image
                     src={track.artwork}
                     alt={track.title ?? "Track"}
+                    width={40}
+                    height={40}
                     className="size-full rounded-md object-cover"
                   />
                 ) : (
@@ -132,7 +143,7 @@ export function SoundBar() {
                 )}
               </div>
               <div className="max-w-24 min-w-0 flex-1 md:max-w-full">
-                <p className="truncate text-sm font-medium text-black">
+                <p className="truncate text-sm font-medium text-foreground">
                   {track?.title ?? "Unknown Track"}
                 </p>
                 <p className="text-muted-foreground truncate text-sm font-medium">
