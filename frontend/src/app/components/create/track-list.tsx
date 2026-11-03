@@ -196,6 +196,8 @@ export function TrackList({ tracks }: { tracks: Track[] }) {
                               alt={track.title ?? "Track Thumbnail"}
                               width={48}
                               height={48}
+                              // ImageKit already resizes covers; signed URLs change per request.
+                              unoptimized
                             />
                           ) : (
                             <div className="bg-secondary/10 flex size-full shrink-0 items-center justify-center rounded-md">

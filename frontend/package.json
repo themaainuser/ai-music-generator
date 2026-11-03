@@ -22,9 +22,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.985.0",
-    "@aws-sdk/s3-request-presigner": "^3.985.0",
     "@daveyplate/better-auth-ui": "^3.3.15",
+    "@imagekit/nodejs": "^7.14.0",
     "@polar-sh/better-auth": "^1.8.4",
     "@polar-sh/sdk": "^0.47.1",
     "@prisma/adapter-pg": "^7.3.0",

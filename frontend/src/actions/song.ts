@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "~/lib/auth";
 import { db } from "~/server/db";
-import { getPresignedUrl } from "~/actions/generation";
+import { getSignedFileUrl } from "~/server/storage";
 
 export async function setPublishedStatus(songId: string, published: boolean) {
     const session = await auth.api.getSession({
@@ -40,8 +40,7 @@ export async function downloadSong(songId: string) {
     if (!song?.s3key) {
         throw new Error("Song not found");
     }
-    const url = await getPresignedUrl(song.s3key);
-    redirect(url);
+    redirect(getSignedFileUrl(song.s3key));
 }
 export async function onRenameTitle(songId: string, newTitle: string) {
     const session = await auth.api.getSession({

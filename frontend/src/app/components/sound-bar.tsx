@@ -137,6 +137,8 @@ export function SoundBar() {
                     width={40}
                     height={40}
                     className="size-full rounded-md object-cover"
+                    // ImageKit already resizes covers; signed URLs change per request.
+                    unoptimized
                   />
                 ) : (
                   <Music4 className="text-white" />

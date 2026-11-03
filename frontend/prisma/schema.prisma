@@ -10,7 +10,9 @@ model Song {
   id                String     @id @default(cuid())
   title             String
   description       String
+  /// ImageKit file path of the MP3 (column name predates the move off S3)
   s3key             String?
+  /// ImageKit file path of the cover image
   thumbnailS3Key    String?
   status            String     @default("queued")
   instrumental      Boolean    @default(false)

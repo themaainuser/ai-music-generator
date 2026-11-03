@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Music } from "lucide-react";
-import { getPresignedUrl } from "~/actions/generation";
+import { getSignedCoverUrl } from "~/server/storage";
 import { auth } from "~/lib/auth";
 import { db } from "~/server/db";
 
@@ -37,14 +37,12 @@ export default async function HomePage() {
     take: 100,
   });
 
-  const songsWithUrl = await Promise.all(
-    song.map(async (song) => {
-      const thumbnailS3Key = song.thumbnailS3Key
-        ? await getPresignedUrl(song.thumbnailS3Key)
-        : null;
-      return { ...song, thumbnailS3Key };
-    }),
-  );
+  const songsWithUrl = song.map((song) => ({
+    ...song,
+    thumbnailS3Key: song.thumbnailS3Key
+      ? getSignedCoverUrl(song.thumbnailS3Key)
+      : null,
+  }));
 
   const last2Days = new Date();
   last2Days.setDate(last2Days.getDate() - 2);

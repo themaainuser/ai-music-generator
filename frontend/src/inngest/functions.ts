@@ -125,14 +125,15 @@ export const generateSong = inngest.createFunction(
                 }
             })
             await step.run("update-song-result", async () => {
-                const responseData = response.ok ? (await response.json()) as { s3Key: string, cover_image_s3key: string, categories: string[] } : null;
+                // Matches the backend's GenerateMusicFilesResponse (ImageKit file paths).
+                const responseData = response.ok ? (await response.json()) as { audio_path: string, cover_image_path: string, categories: string[] } : null;
                 await db.song.update({
                     where: {
                         id: songId,
                     },
                     data: {
-                        s3key: responseData?.s3Key,
-                        thumbnailS3Key: responseData?.cover_image_s3key,
+                        s3key: responseData?.audio_path,
+                        thumbnailS3Key: responseData?.cover_image_path,
                         status: responseData ? "processed" : "failed",
                     }
                 })
